@@ -391,8 +391,8 @@ function rSubs(t){
     var s=t.subs[i],st=STS.find(function(x){return x.l===s.status;})||STS[3];
     h+='<div class="srow">';
     h+='<div class="sind"></div><div class="sdot"></div>';
-    h+='<div class="sname"><input class="sni" value="'+esc(s.name)+'" onblur="rnS(\''+t.id+'\',\''+s.id+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()"></div>';
-    h+='<div class="sst"><button class="pill" style="background:'+st.bg+';color:'+st.fg+';font-size:10px;padding:2px 7px" onclick="openSubDD(event,\''+t.id+'\',\''+s.id+'\',this)">'+st.l+'</button></div>';
+    h+='<div class="sname"><input class="sni" value="'+esc(s.name)+'" oninput="rnS(\''+t.id+'\',\''+s.id+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()"></div>';
+    h+='<div class="sst">"><button class="pill" style="background:'+st.bg+';color:'+st.fg+';font-size:10px;padding:2px 7px" onclick="openSubDD(event,\''+t.id+'\',\''+s.id+'\',this)">'+st.l+'</button></div>';
     h+='<button class="sdel" onclick="delS(\''+t.id+'\',\''+s.id+'\')">&#10005;</button>';
     h+='</div>';
   }
@@ -560,7 +560,7 @@ function setSubSt(tid,sid,v){var t=gt(tid);if(t){var s=t.subs.find(function(x){r
 function setEx(tid,cid,v){var t=gt(tid);if(!t)return;t.ex[cid]=v;var col=COLS.find(function(c){return c.id===cid;});if(col&&(col.type==='number'||col.type==='timer')){render();autoSave();}}
 function rnT(id,v){var t=gt(id);if(t&&v)t.name=v;}
 function rnG(id,v){var g=GR.find(function(x){return x.id===id;});if(g&&v)g.name=v;}
-function rnS(tid,sid,v){var t=gt(tid);if(t){var s=t.subs.find(function(x){return x.id===sid;});if(s&&v){s.name=v;autoSave();}}}
+function rnS(tid,sid,v){var t=gt(tid);if(t){var s=t.subs.find(function(x){return x.id===sid;});if(s)s.name=v;}}
 function editDate(tid,span){
   var t=gt(tid);
   var inp=document.createElement('input');inp.type='date';inp.value=t?t.date:'';inp.className='dinp';
@@ -578,14 +578,11 @@ function delG(id){if(!confirm('למחוק את הפרויקט וכל שלביו?
 function togT(tid){var t=gt(tid);if(t)t.exp=!t.exp;render();}
 function addSub(tid){
   var t=gt(tid);if(!t)return;
-  // Save any unsaved sub names from DOM before re-render
-  t.subs.forEach(function(s){
-    var inp=document.querySelector('.sni[onblur*="'+s.id+'"]');
-    if(inp&&inp.value)s.name=inp.value;
-  });
   t.exp=true;
-  t.subs.push({id:'s'+nxt(),name:'תת שלב חדש',status:'לא התחיל'});
-  render();autoSave();
+  t.subs.push({id:'s'+nxt(),name:'',status:'לא התחיל'});
+  render();
+  setTimeout(function(){var inputs=document.querySelectorAll('input.sni');if(inputs.length)inputs[inputs.length-1].focus();},30);
+  autoSave();
 }
 function delS(tid,sid){var t=gt(tid);if(!t)return;t.subs=t.subs.filter(function(s){return s.id!==sid;});render();autoSave();}
 function addTask(gid){TK.push({id:'t'+nxt(),name:'שלב חדש',status:'לא התחיל',priority:'בינוני',owner:'u1',date:'',gid:gid,ex:{},exp:false,subs:[]});render();autoSave();}
