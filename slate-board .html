@@ -287,6 +287,15 @@ function loadFromSheets(){
         if(data.GR&&data.TK){
           GR=data.GR;TK=data.TK;
           if(data.COLS&&data.COLS.length)COLS=data.COLS;
+          // Stop all running timers on load
+          TK.forEach(function(t){
+            Object.keys(t.ex||{}).forEach(function(cid){
+              var ts=t.ex[cid];
+              if(ts&&ts.run){
+                t.ex[cid]={total:ts.total+(Date.now()-ts.since),run:false,since:null};
+              }
+            });
+          });
           render();
           showSaveStatus('✓ נטען בהצלחה');
         } else {
